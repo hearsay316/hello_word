@@ -8,7 +8,7 @@ use std::io;
 #[warn(non_snake_case)]
 async fn status() -> impl Responder {
    web::HttpResponse::Ok()
-       .json(Status{status: "OK".parse().unwrap() })
+       .json(Status{status: "UP".to_string()})
 }
 
 #[warn(non_snake_case)]
