@@ -13,3 +13,5 @@ serde= { version="1.0.118",features=["derive"] }
 actix-multipart = "0.3"
 futures = "0.3.1"
 sanitize-filename = "0.2"
+dotenv="0.15.0"
+config="0.10.1"

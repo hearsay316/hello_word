@@ -1,12 +1,14 @@
 mod models;
+mod config;
 
 use crate::models::Status;
-use actix_web::{HttpServer, App, web, Responder, http, Result, get, HttpResponse,Error};
+use actix_web::{HttpServer, App, web, Responder, http, Result, get, HttpResponse, Error};
 use std::io;
 use actix_cors::Cors;
 use actix_multipart::Multipart;
 use futures::{StreamExt, TryStreamExt};
 use std::io::Write;
+use dotenv::dotenv;
 
 async fn save_file(mut payload: Multipart) -> Result<HttpResponse, Error> {
     // iterate over multipart stream
@@ -29,6 +31,7 @@ async fn save_file(mut payload: Multipart) -> Result<HttpResponse, Error> {
     }
     Ok(HttpResponse::Ok().into())
 }
+
 // #[warn(non_snake_case)]
 async fn status() -> impl Responder {
     web::HttpResponse::Ok()
@@ -45,7 +48,9 @@ async fn index(web::Path((user_id, friend)): web::Path<(u32, String)>) -> Result
 #[warn(non_snake_case)]
 #[actix_web::main]
 async fn main() -> io::Result<()> {
-    println!("项目启动了在 127.0.0.1:8080");
+    dotenv().ok();
+    let config = crate::config::Config::from_env().unwrap();
+    println!("项目启动了{:?}",config);
     std::fs::create_dir_all("./tmp").unwrap();
     HttpServer::new(|| {
         let cors = Cors::default()
@@ -62,9 +67,9 @@ async fn main() -> io::Result<()> {
         App::new().wrap(cors)
             .service(index)
             .route("/", web::get().to(status))
-            .route("/",web::post().to(save_file))
+            .route("/", web::post().to(save_file))
     })
-        .bind("127.0.0.1:8081")?
+        .bind(format!("{}:{}", config.server.host, config.server.port))?
         .run()
         .await
 }
