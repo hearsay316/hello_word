@@ -1,6 +1,8 @@
 mod models;
 mod config;
 mod handlers;
+mod db;
+
 use crate::models::Status;
 use actix_web::{HttpServer, App, web, Responder, http, Result, get, HttpResponse, Error};
 use std::io;
@@ -72,6 +74,7 @@ async fn main() -> io::Result<()> {
             .service(index)
             .route("/", web::get().to(status))
             .route("/", web::post().to(save_file))
+            .route("/todos{_:/?}", web::get().to(todos))
     })
         .bind(format!("{}:{}", config.server.host, config.server.port))?
         .run()
