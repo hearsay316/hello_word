@@ -1,9 +1,10 @@
 use config::ConfigError;
 use serde::{Serialize, Deserialize};
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Debug,Deserialize)]
 pub struct Config {
-    pub server: ServerConfig
+    pub server: ServerConfig,
+    pub pg: deadpool_postgres::Config
 }
 
 #[derive(Serialize, Deserialize, Debug)]

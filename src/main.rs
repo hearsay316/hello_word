@@ -1,6 +1,6 @@
 mod models;
 mod config;
-
+mod handlers;
 use crate::models::Status;
 use actix_web::{HttpServer, App, web, Responder, http, Result, get, HttpResponse, Error};
 use std::io;
@@ -9,7 +9,8 @@ use actix_multipart::Multipart;
 use futures::{StreamExt, TryStreamExt};
 use std::io::Write;
 use dotenv::dotenv;
-
+use tokio_postgres::NoTls;
+use crate::handlers::*;
 async fn save_file(mut payload: Multipart) -> Result<HttpResponse, Error> {
     // iterate over multipart stream
     while let Ok(Some(mut field)) = payload.try_next().await {
@@ -32,11 +33,11 @@ async fn save_file(mut payload: Multipart) -> Result<HttpResponse, Error> {
     Ok(HttpResponse::Ok().into())
 }
 
-// #[warn(non_snake_case)]
-async fn status() -> impl Responder {
-    web::HttpResponse::Ok()
-        .json(Status { status: "UP".to_string() })
-}
+// // #[warn(non_snake_case)]
+// async fn status() -> impl Responder {
+//     web::HttpResponse::Ok()
+//         .json(Status { status: "UP".to_string() })
+// }
 
 
 #[get("/users/{user_id}/{friend}")]
@@ -50,9 +51,10 @@ async fn index(web::Path((user_id, friend)): web::Path<(u32, String)>) -> Result
 async fn main() -> io::Result<()> {
     dotenv().ok();
     let config = crate::config::Config::from_env().unwrap();
+    let pool = config.pg.create_pool(NoTls).unwrap();
     println!("项目启动了{:?}",config);
     std::fs::create_dir_all("./tmp").unwrap();
-    HttpServer::new(|| {
+    HttpServer::new(move || {
         let cors = Cors::default()
             .allowed_origin("http://localhost:63342")
             .allowed_origin("http://localhost:8080")
@@ -64,7 +66,9 @@ async fn main() -> io::Result<()> {
             // .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
             .allowed_header(http::header::CONTENT_TYPE)
             .max_age(3600);
-        App::new().wrap(cors)
+        App::new()
+            .data(pool.clone())
+            .wrap(cors)
             .service(index)
             .route("/", web::get().to(status))
             .route("/", web::post().to(save_file))
