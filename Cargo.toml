@@ -10,3 +10,6 @@ edition = "2018"
 actix-web = "3"
 actix-cors = "0.5"
 serde= { version="1.0.118",features=["derive"] }
+actix-multipart = "0.3"
+futures = "0.3.1"
+sanitize-filename = "0.2"
