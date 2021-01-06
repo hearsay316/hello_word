@@ -58,7 +58,7 @@ async fn main() -> io::Result<()> {
     std::fs::create_dir_all("./tmp").unwrap();
     HttpServer::new(move || {
         let cors = Cors::default()
-            .allowed_origin("http://localhost:63342")
+            .allowed_origin("http://localhost:63343")
             .allowed_origin("http://localhost:8080")
             // allow_any_origin 全部都跨域  多个跨域设置多个
             // .allowed_origin_fn(|origin, _req_head| {
@@ -75,6 +75,7 @@ async fn main() -> io::Result<()> {
             .route("/", web::get().to(status))
             .route("/", web::post().to(save_file))
             .route("/todos{_:/?}", web::get().to(todos))
+            .route("/todos{_:/?}", web::post().to(create_todo))
             .route("/get/{list_id}/items{_:/?}", web::get().to(get_todo_items))
     })
         .bind(format!("{}:{}", config.server.host, config.server.port))?

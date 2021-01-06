@@ -18,3 +18,8 @@ pub struct TodoItem{
     pub checked :bool,
     pub list_id:i32
 }
+#[derive(Serialize, Deserialize, Debug)]
+pub struct CreateTodoList{
+    pub title:String,
+
+}

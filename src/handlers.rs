@@ -1,4 +1,4 @@
-use crate::models::{Status, TodoItem};
+use crate::models::{Status, TodoItem,CreateTodoList};
 use actix_web::{HttpServer, App, web, Responder, http, Result, get, HttpResponse, Error};
 use deadpool_postgres::{Pool, Client};
 use crate::db;
@@ -28,7 +28,7 @@ pub async fn get_todo_items(db_pool: web::Data<Pool>, path: web::Path<(i32,)>) -
     let client: Client =
         db_pool.get().await.expect("Error connecting to the database");
     println!("{:?}",path);
-    let result = db::get_item(&client, path.into_inner().0 ).await;
+    let result = db::get_items(&client, path.into_inner().0 ).await;
 
     match result {
         Ok(items) => HttpResponse::Ok().json(items),
@@ -36,3 +36,13 @@ pub async fn get_todo_items(db_pool: web::Data<Pool>, path: web::Path<(i32,)>) -
     }
 }
 
+pub async fn create_todo(db_pool: web::Data<Pool>, json: web::Json<CreateTodoList>) -> impl Responder {
+    let client: Client =
+        db_pool.get().await.expect("Error connecting to the database");
+
+    let result = db::create_todo(&client,json.title.clone()).await;
+    match result {
+        Ok(todo) => HttpResponse::Ok().json(todo),
+        Err(_) => HttpResponse::InternalServerError().into()
+    }
+}
