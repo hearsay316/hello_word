@@ -23,7 +23,7 @@ pub struct CreateTodoList{
     pub title:String,
 
 }
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Debug)]
 pub struct ResultResponse{
     pub success:bool
 }

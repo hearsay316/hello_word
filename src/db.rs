@@ -1,8 +1,7 @@
 use crate::models::{TodoList, TodoItem};
-use deadpool_postgres::{Client, Pool};
+use deadpool_postgres::{Client};
 use tokio_pg_mapper::FromTokioPostgresRow;
 use std::io;
-use actix_web::web;
 
 pub async fn get_todo_s(client:&Client) ->Result<Vec<TodoList>,io::Error>{
     let statement = client
@@ -50,7 +49,8 @@ pub async fn create_todo(client:&Client,title:String)->Result<TodoList,io::Error
 }
 pub async fn check_item(client:&Client,list_id:i32,item_id:i32)->Result<(),io::Error>{
     let statement = client
-        .prepare("update todo_item set checked = true where list_id = $1 and id = $2 and check = false")
+        //update todo_item set checked = true where list_id = $1 and id = $2 and checked = false
+        .prepare("update todo_item set checked = true where list_id = $1 and id = $2 and checked = false")
         .await.unwrap();
     let result = client.execute(&statement,&[&list_id,&item_id]).await.expect("Error ch");
     match result {

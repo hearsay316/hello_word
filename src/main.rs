@@ -75,6 +75,8 @@ async fn main() -> io::Result<()> {
             .route("/todos{_:/?}", web::get().to(todos))
             .route("/todos{_:/?}", web::post().to(create_todo))
             .route("/get/{list_id}/items{_:/?}", web::get().to(get_todo_items))
+            .route("/get/{list_id}/items/{item_id}{_:/?}", web::get().to(create_item))
+
     })
         .bind(format!("{}:{}", config.server.host, config.server.port))?
         .run()
