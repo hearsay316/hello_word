@@ -46,12 +46,12 @@ pub async fn create_todo(db_pool: web::Data<Pool>, json: web::Json<CreateTodoLis
         Err(_) => HttpResponse::InternalServerError().into()
     }
 }
-pub async fn create_item(db_pool: web::Data<Pool>, web::Path((username, count)): web::Path<(i32, i32)>) -> impl Responder {
+pub async fn create_item(db_pool: web::Data<Pool>, web::Path((list_id, item_id)): web::Path<(i32, i32)>) -> impl Responder {
     let client: Client =
         db_pool.get().await.expect("Error connecting to the database");
-    println!("{}----{}",username, count);
+    println!("{}----{}",list_id, item_id);
     let result = db::
-    check_item(&client, username, count).await;
+    check_item(&client, list_id, item_id).await;
     match result {
         Ok(()) => HttpResponse::Ok().json(ResultResponse{success:true}),
         Err(ref e) if e.kind() == Other =>HttpResponse::Ok().json(ResultResponse{success:false}),
