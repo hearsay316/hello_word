@@ -1,8 +1,7 @@
-use crate::models::{Status, TodoItem,CreateTodoList};
-use actix_web::{HttpServer, App, web, Responder, http, Result, get, HttpResponse, Error};
+use crate::models::{Status,CreateTodoList};
+use actix_web::{ web, Responder, HttpResponse};
 use deadpool_postgres::{Pool, Client};
 use crate::db;
-use std::io;
 
 // #[warn(non_snake_case)]
 pub async fn status() -> impl Responder {

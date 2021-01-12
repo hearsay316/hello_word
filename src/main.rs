@@ -2,9 +2,7 @@ mod models;
 mod config;
 mod handlers;
 mod db;
-
-use crate::models::Status;
-use actix_web::{HttpServer, App, web, Responder, http, Result, get, HttpResponse, Error};
+use actix_web::{HttpServer, App, web, http, Result, get, HttpResponse, Error};
 use std::io;
 use actix_cors::Cors;
 use actix_multipart::Multipart;
