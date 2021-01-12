@@ -1,7 +1,8 @@
-use crate::models::{Status,CreateTodoList};
-use actix_web::{ web, Responder, HttpResponse};
+use crate::models::{Status, TodoItem, CreateTodoList, ResultResponse};
+use actix_web::{HttpServer, App, web, Responder, http, Result, get, HttpResponse, Error};
 use deadpool_postgres::{Pool, Client};
 use crate::db;
+use std::io;
 
 // #[warn(non_snake_case)]
 pub async fn status() -> impl Responder {
@@ -42,6 +43,17 @@ pub async fn create_todo(db_pool: web::Data<Pool>, json: web::Json<CreateTodoLis
     let result = db::create_todo(&client,json.title.clone()).await;
     match result {
         Ok(todo) => HttpResponse::Ok().json(todo),
+        Err(_) => HttpResponse::InternalServerError().into()
+    }
+}
+pub async fn create_item(db_pool: web::Data<Pool>, path: web::Path<(i32,i32)>) -> impl Responder {
+    let client: Client =
+        db_pool.get().await.expect("Error connecting to the database");
+
+    let result = db::
+    check_item(&client,path.into_inner().0,path.into_inner().1).await;
+    match result {
+        Ok(..) => HttpResponse::Ok().json(ResultResponse{success:true}),
         Err(_) => HttpResponse::InternalServerError().into()
     }
 }

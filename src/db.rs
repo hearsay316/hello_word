@@ -1,7 +1,9 @@
 use crate::models::{TodoList, TodoItem};
-use deadpool_postgres::Client;
+use deadpool_postgres::{Client, Pool};
 use tokio_pg_mapper::FromTokioPostgresRow;
 use std::io;
+use actix_web::web;
+
 pub async fn get_todo_s(client:&Client) ->Result<Vec<TodoList>,io::Error>{
     let statement = client
         .prepare("select * from todo_list order by id desc")
@@ -46,3 +48,12 @@ pub async fn create_todo(client:&Client,title:String)->Result<TodoList,io::Error
           .pop()
           .ok_or(io::Error::new(io::ErrorKind::Other,"错误二"))
 }
+pub async fn check_item(client:&Client,list_id:i32,item_id:i32)->Result<(),io::Error>{
+    let statement = client
+        .prepare("update todo_item set checked = true where list_id = $1 and id = $2 and check = false")
+        .await.unwrap();
+    let result = client.execute(&statement,&[&list_id,&item_id]).await.expect("Error ch");
+    match result {
+        ref updated if *updated ==1=>Ok(()),
+        _=>Err(io::Error::new(io::ErrorKind::Other,"数据库读写错误了"))
+}}
