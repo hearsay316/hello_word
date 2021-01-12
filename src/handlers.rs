@@ -53,7 +53,7 @@ pub async fn create_item(db_pool: web::Data<Pool>, path: web::Path<(i32,i32)>) -
     let result = db::
     check_item(&client,path.into_inner().0,path.into_inner().1).await;
     match result {
-        Ok() => HttpResponse::Ok().json(ResultResponse{success:true}),
+        Ok(..) => HttpResponse::Ok().json(ResultResponse{success:true}),
         Err(_) => HttpResponse::InternalServerError().into()
     }
 }
