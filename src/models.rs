@@ -21,7 +21,6 @@ pub struct TodoItem{
 #[derive(Serialize, Deserialize, Debug)]
 pub struct CreateTodoList{
     pub title:String,
-
 }
 #[derive(Serialize, Debug)]
 pub struct ResultResponse{

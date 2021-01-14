@@ -2,7 +2,7 @@ mod models;
 mod config;
 mod handlers;
 mod db;
-use actix_web::{HttpServer, App, web, http, Result, get, HttpResponse, Error};
+use actix_web::{HttpServer, App, web, http, Result, HttpResponse, Error};
 use std::io;
 use actix_cors::Cors;
 use actix_multipart::Multipart;
@@ -40,11 +40,7 @@ async fn save_file(mut payload: Multipart) -> Result<HttpResponse, Error> {
 // }
 
 
-#[get("/users/{user_id}/{friend}")]
-async fn index(web::Path((user_id, friend)): web::Path<(u32, String)>) -> Result<String> {
-    //web::Path((user_id, friend)): web::Path<(u32, String)>
-    Ok(format!("Welcome {}, user_id {}!", friend, user_id))
-}
+
 
 #[warn(non_snake_case)]
 #[actix_web::main]

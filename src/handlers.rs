@@ -1,9 +1,15 @@
 use crate::models::{Status, CreateTodoList, ResultResponse};
-use actix_web::{ web, Responder,  HttpResponse};
+use actix_web::{ web, Responder,  HttpResponse,Result, get};
 use deadpool_postgres::{Pool, Client};
 use crate::db;
 use std::io::ErrorKind::Other;
 
+
+#[get("/users/{user_id}/{friend}")]
+pub(crate) async fn index(web::Path((user_id, friend)): web::Path<(u32, String)>) -> Result<String> {
+    //web::Path((user_id, friend)): web::Path<(u32, String)>
+    Ok(format!("Welcome {}, user_id {}!", friend, user_id))
+}
 // #[warn(non_snake_case)]
 pub async fn status() -> impl Responder {
     web::HttpResponse::Ok()
@@ -46,6 +52,7 @@ pub async fn create_todo(db_pool: web::Data<Pool>, json: web::Json<CreateTodoLis
         Err(_) => HttpResponse::InternalServerError().into()
     }
 }
+
 pub async fn create_item(db_pool: web::Data<Pool>, web::Path((list_id, item_id)): web::Path<(i32, i32)>) -> impl Responder {
     let client: Client =
         db_pool.get().await.expect("Error connecting to the database");
